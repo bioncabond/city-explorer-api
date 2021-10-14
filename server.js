@@ -22,7 +22,7 @@ app.get('/weather', (request, response) => response.status(200).send('Weather is
 
 //If no routes match
 app.get('*',(request,response) => {
-  response.status(404).send ('Page Not Found. Try something else.');
+  response.status(500).send ('Page Not Found. Try something else.');
 });
 
 function handleWeather(request, response) {
