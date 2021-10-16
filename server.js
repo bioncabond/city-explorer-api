@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const axios = require ('axios');
+
 const weather = require('./data/weather.json');
 
 const app = express();
@@ -14,7 +16,6 @@ const PORT = process.env.PORT || 3001;
 //Setup routes
 app.get('/', (request, response) => response.status(200).send('This is the root. Nothing exciting here'));
 app.get('/weather', handleWeather);
-
 app.get('/weather', (request, response) => response.status(200).send('Weather is Working!'));
 
 
@@ -25,20 +26,21 @@ app.get('*',(request,response) => {
   response.status(500).send ('Page Not Found. Try something else.');
 });
 
-function handleWeather(request, response) {
+async function handleWeather(request, response) {
   console.log('query params:' , request.query);
-  let { lat, lon, searchQuery } = request.query;
-  //   response.status(200).send('handleWeather is working!');
+  let { lat, lon } = request.query;
+  //   TEST: response.status(200).send('handleWeather is working!');
 
-  //Find the City to pull the lat & lon
-  let foundCity = weather.find(city => city.city_name.toLowerCase() === searchQuery.toLowerCase());
+  let weatherURL = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&days=3&key=${process.env.WEATHER_API_KEY}`;
+  //   let weatherURL = `https://api.weatherbit.io/v2.0/forecast/daily?lat=35.91&lon=31.95&days=3&key=25f65879afd747adbf7001ea154fe344`;
 
-  console.log('foundCity:', foundCity);
-  //   response.status(200).send('found city', foundCity.data);
+
+  // console.log('foundCity:', foundCity);
+  // TEST: response.status(200).send('found city', foundCity.data);
 
   try{
-    const weatherArray = foundCity.data.map((day) => new Forecast(day));
-    console.log(weatherArray);
+    let weatherData = await axios.get(weatherURL);
+    const weatherArray = weatherData.data.data.map((day) => new Forecast(day));
     response.status(200).send(weatherArray);
 
   }
