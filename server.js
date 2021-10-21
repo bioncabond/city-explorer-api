@@ -19,9 +19,6 @@ app.get('/weather', handleWeather);
 app.get('/weather', (request, response) => response.status(200).send('Weather is Working!'));
 app.get('/movies', handleMovies);
 
-
-
-
 //If no routes match
 app.get('*',(request,response) => {
   response.status(500).send ('Page Not Found. Try something else.');
